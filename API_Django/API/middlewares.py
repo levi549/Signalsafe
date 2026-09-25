@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import os
 from django.http import JsonResponse
 load_dotenv()
-supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
 class Middleware:
     def __init__(self, get_response):
