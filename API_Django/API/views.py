@@ -102,6 +102,7 @@ def create_estabelecimento(request):
     try:
         user=request.user_id
         data=request.data
+
         if not data or not user:
             return Response({"error":"something is missing"},status=400)
         serializer=EstabelecimentoSerializer(data=data)
@@ -119,12 +120,37 @@ def create_sala(request):
         user=request.user_id
         estabelecimento=request.GET.get('id_estabelecimento')
         data=request.data
+        permission=Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).exists()
+        if not permission:
+            return Response({"error":"You don't have permission to create a sala for this estabelecimento"},status=403)
         if not user or not data or not estabelecimento:
             return Response({"Error":"something is missing"},status=400)
         serializer=SalaSerializer(data=data)
         if not serializer.is_valid():
             return Response({"error":serializer.errors},status=400)
-        serializer.save(id_estabe_id=estabelecimento,id_estabe__id_user_id=user)
+        serializer.save(id_estabe_id=estabelecimento)
         return Response(serializer.data,status=200)
     except Exception as e:
         return Response({"error":str(e)}, status=400)
+
+
+
+@api_view(['POST'])
+def create_jammer(request):
+    try:
+        user=request.user_id
+        estabelecimento=request.GET.get('id_estabelecimento')
+        sala=request.GET.get('id_sala')
+        data=request.data
+        permission=Sala.objects.filter(id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
+        if not permission:
+            return Response({"error":"credenciais invaidas"},status=400)
+        if not user or not estabelecimento or not sala or not data:
+            return Response({"error":"something is missing"},status=400)
+        serializer=JammerSerializer(data=data)
+        if not serializer.is_valid():
+            return Response({"error":serializer.errors},status=400)
+        serializer.save(id_sala_id=sala)
+        return Response(serializer.data,status=200)
+    except Exception as e:
+        return Response({"error":str(e)},status=400)
