@@ -154,3 +154,10 @@ def create_jammer(request):
         return Response(serializer.data,status=200)
     except Exception as e:
         return Response({"error":str(e)},status=400)
+
+@api_view(['DELETE'])
+def delete_estabelecimento(request):
+    try:
+        pass
+    except Exception as e:
+        return Response({"error":str(e)},status=400)

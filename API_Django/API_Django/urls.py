@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 from API.views import cadastro, login
+from django.http import HttpResponse
+def bem_vindo(request):
+    return HttpResponse("servidor funcionando")
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/cadastro/', cadastro),
-    path('auth/login/', login),
+    path('admin/', admin.site.urls,name='admin'),
+    path('auth/cadastro/', cadastro,name='cadastro'),
+    path('auth/login/', login,name='login'),
+    path('',bem_vindo,name='bem vindo')
 ]
