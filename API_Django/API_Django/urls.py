@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from API.views import cadastro, login
+from API.views import cadastro, login, get_estabelecimento,get_sala,get_jammer,create_estabelecimento,create_sala,create_jammer
 from django.http import HttpResponse
 def bem_vindo(request):
     return HttpResponse("servidor funcionando")
@@ -25,5 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls,name='admin'),
     path('auth/cadastro/', cadastro,name='cadastro'),
     path('auth/login/', login,name='login'),
-    path('',bem_vindo,name='bem vindo')
+    path('',bem_vindo,name='bem vindo'),
+    path('get/estabelecimento',get_estabelecimento,name='get_estabelecimento'),
+    path('get/sala/',get_sala,name='get_sala'),
+    path('get/jammer',get_jammer,name='get_jammer')
 ]

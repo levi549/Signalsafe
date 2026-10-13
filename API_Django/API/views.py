@@ -9,8 +9,6 @@ from .models import Estabelecimento, Sala, Jammer,User
 # Create your views here.
 load_dotenv()
 
-
-
 @api_view(['POST'])
 def cadastro(request):
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
@@ -64,7 +62,7 @@ def get_estabelecimento(request):
 def get_sala(request):
     try:
         user=request.user_id
-        id_estabelecimento= request.GET('id_estabelecimento')
+        id_estabelecimento= request.GET.get('id_estabelecimento')
         if not user or not id_estabelecimento:
             return Response({"error": "Something missing"}, status=400)
         salas = Sala.objects.filter(
