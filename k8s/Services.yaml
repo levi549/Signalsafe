@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Service
+
+matadata:
+  name: api-django-service
+
+spec:
+  type: CluserIP
+
+  selector:
+    app: api-django
+
+  ports:
+    - port: 8000 
+      targetPort: 8000
+      protocol: TCP

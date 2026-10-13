@@ -1,0 +1,26 @@
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-django
+
+spec: # quantidade de imagens a ser mantidas
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: api-django # label dos pods que esse deployment ira gerennciar
+
+  template: # modelo usado na criação de cada pod
+    metadata:
+      labels:
+        app: api-django # o label de cada pod deve ser igual ao matchLabel
+
+    spec: # container que serão executados no pod
+      containers:
+        - name: api
+          image: cartaginezzi/api-django:v1
+          imagePullpolicy: Always
+          ports:
+            - containerPort: 8000
