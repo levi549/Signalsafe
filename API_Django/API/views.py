@@ -163,8 +163,8 @@ def delete_estabelecimento(request):
         permission=Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).exists()
         if not permission:
             return Response({"You dont have permisson to do that!"},status=400)
-        Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).delete()
-        return Response({"Estabelecimento deleted with sucess"},status=200)
+        resposne=Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).delete()
+        return Response({"Estabelecimento deleted with sucess":resposne},status=200)
     except Exception as e:
         return Response({"error":str(e)},status=400)
 
@@ -172,7 +172,50 @@ def delete_estabelecimento(request):
 @api_view(['DELETE'])
 def delete_sala(request):
     try:
-        pass
+        user=request.user_id
+        estabelecimento=request.GET.get('id_estabelecimento')
+        sala=request.GET.get('id_sala')
+        if not user or not estabelecimento or not sala:
+            return Respose({"Somethng is missing"},status=400)
+        permission=Sala.objects.filter(id=sala,id_estabe_id=estabelecimento,id_estabe__id_user_id=user).exists()
+        if not permission:
+            return Response({"You dont have permission to do that"},status=400)
+        resposne=Sala.objects.filter(id=sala,id_estabe_id=estabelecimento,id_estabe__id_user_id=user).delete()
+        return Response({"Sala deleted with sucess!",resposne},status=200)    
     except Exception as e:
         return Response({"Error":str(e)},status=400)
 
+@api_view(['DELETE'])
+def delete_jammer(request):
+    try:
+        user=request.user_id
+        estabelecimento=request.GET.get('id_estabelecimento')
+        sala=request.GET.get('id_sala')
+        jammer=request.GET.get('id_jammer')
+        if not user or not estabelecimento or not sala or not jammer:
+            return Respose({"Somethng is missing"},status=400)
+        permission = Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
+        if not permission:
+            return Response({"You dont have permission to do that"},status=400)
+        response=Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).delete()
+        return Response({"Sala deleted with sucess!",response},status=200)    
+    except Exception as e:
+        return Response({"Error":str(e)},status=400)
+
+
+@api_view(['UPDATE'])
+def update_jammer(request):
+    try:
+        user=request.user_id
+        estabelecimento=request.GET.get('id_estabelecimento')
+        sala=request.GET.get('id_sala')
+        jammer=request.GET.get('id_jammer')
+        if not user or not estabelecimento or not sala or not jammer:
+            return Respose({"Somethng is missing"},status=400)
+        permission = Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
+        if not permission:
+            return Response({"You dont have permission to do that"},status=400)
+        response=Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).update(status= not status)
+        return Response({"Sala deleted with sucess!",response},status=200)    
+    except Exception as e:
+        return Response({"Error":str(e)},status=400)
