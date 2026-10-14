@@ -21,6 +21,6 @@ spec: # quantidade de imagens a ser mantidas
       containers:
         - name: api
           image: cartaginezzi/api-django:v1
-          imagePullpolicy: Always
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
