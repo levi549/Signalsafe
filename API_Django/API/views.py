@@ -156,6 +156,23 @@ def create_jammer(request):
 @api_view(['DELETE'])
 def delete_estabelecimento(request):
     try:
-        pass
+        user=request.user_id
+        estabelecimento=request.GET.get('id_estabelecimento')   
+        if not user or not estabelecimento:
+            return Response({"Something is missing"},status=400)
+        permission=Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).exists()
+        if not permission:
+            return Response({"You dont have permisson to do that!"},status=400)
+        Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).delete()
+        return Response({"Estabelecimento deleted with sucess"},status=200)
     except Exception as e:
         return Response({"error":str(e)},status=400)
+
+
+@api_view(['DELETE'])
+def delete_sala(request):
+    try:
+        pass
+    except Exception as e:
+        return Response({"Error":str(e)},status=400)
+
