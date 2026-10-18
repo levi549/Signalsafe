@@ -37,7 +37,7 @@ def login(request):
         serializer=LoginSerializer(data=data)
         if not serializer.is_valid():
             return Response({"error": serializer.errors}, status=400)
-        response = supabase.auth.sign_in_with_email_and_password(
+        response = supabase.auth.sign_in_with_password(
             email=serializer.validated_data['email'],
             password=serializer.validated_data['password']
         )
@@ -52,6 +52,7 @@ def login(request):
 @api_view(['GET'])
 def get_estabelecimento(request):
     try:
+        user=request.user_id
         estabelecimentos = Estabelecimento.objects.filter(id_user_id=user)
         serializer = EstabelecimentoSerializer(estabelecimentos, many=True)
         return Response(serializer.data, status=200)
@@ -212,10 +213,10 @@ def update_jammer(request):
         jammer=request.GET.get('id_jammer')
         if not user or not estabelecimento or not sala or not jammer:
             return Respose({"Somethng is missing"},status=400)
-        permission = Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
+        permission = Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
         if not permission:
             return Response({"You dont have permission to do that"},status=400)
-        response=Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).update(status= not status)
+        response=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).update(status= not status)
         return Response({"Sala deleted with sucess!",response},status=200)    
     except Exception as e:
         return Response({"Error":str(e)},status=400)
