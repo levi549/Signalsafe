@@ -9,7 +9,7 @@ mcp=FastMCP("API_Django")
 
 
 @mcp.tool()
-def listar_estabelecimentos(token):
+def listar_estabelecimentos(token:str):
     try:
         url=os.getenv("URL")+'/get/estabelecimentos'
         header={"Authorization":token}
@@ -22,7 +22,7 @@ def listar_estabelecimentos(token):
 
 
 @mcp.tool()
-def listar_salas(token,id_estabe):
+def listar_salas(token:str,id_estabe:int):
     try:
         url=os.getenv("URL")+'/get/sala'
         header={"Authorization":token}
@@ -34,7 +34,7 @@ def listar_salas(token,id_estabe):
         return e.json()
 
 @mcp.tool()
-def listar_jammer(token,id_estabe,id_sala):
+def listar_jammer(token:str,id_estabe:int,id_sala:int):
     try:
         url=os.getenv("URL")+'/get/jammer'
         header={"Authorization":token}
@@ -46,8 +46,14 @@ def listar_jammer(token,id_estabe,id_sala):
         return e.json()
 
 @mcp.tool()
-def desligar_jammer(token,id_estabe,id_sala):
+def desligar_jammer(token:str,id_estabe:int,id_sala:int):
     try:
         pass
     except Exception as e:
         return e.json()
+
+mcp.run(
+        transport="streamable-http",
+        host="0.0.0.0",
+        port=3000
+    )

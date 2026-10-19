@@ -3,10 +3,8 @@ from langchain.tools import tools
 import os
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+from langchain.mcp import MCPAdapter
 load_dotenv()
-
-client=genai.Client(api_key=os.getenv("AI_URL"))
-
 
 class AI():
     def __init__(self):
@@ -15,8 +13,16 @@ class AI():
                                 api_key=os.getenv("AI_URL")
                             )
         self.system_prompt=""
-        self.tools=[]
+        self.tools=Get_tools()
         self.agent=create_agent(model=self.modelo,tools=self.tools,system_prompt=self.system_prompt)
+        self.memory=[]
+
+
+    async def Get_tools():
+        async with MCPAdapter("http://localhost:3000") as adapter:
+            self.tools=await adapter.list_tools()
+
 
     def inferência():
         pass
+
