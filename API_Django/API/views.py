@@ -42,9 +42,11 @@ def login(request):
             password=serializer.validated_data['password']
         )
         return Response({
-            "email": response.user.email,
-            "session": response.session
-        }, status=200)
+        "access_token": response.session.access_token,
+        "refresh_token": response.session.refresh_token,
+        "expires_in": response.session.expires_in,
+        "user": {
+        "email": response.user.email}}, status=200)  
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
