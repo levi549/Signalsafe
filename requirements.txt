@@ -3,4 +3,3 @@ djangorestframework>=3.18.3
 python-dotenv>=1.0.0
 supabase>=2.32.0
 psycopg[binary]>=3.3.6
-fastmcp>=4.1.0
