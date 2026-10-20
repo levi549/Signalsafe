@@ -18,7 +18,7 @@ class AI():
         self.memory=[]
 
 
-    async def Get_tools():
+    async def Get_tools(): 
         async with MCPAdapter("http://localhost:3000") as adapter:
             self.tools=await adapter.list_tools()
 

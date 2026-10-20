@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from .serializers import CadastroSerializer, LoginSerializer, EstabelecimentoSerializer, SalaSerializer, JammerSerializer
 from .models import Estabelecimento, Sala, Jammer,User
+import requests
 # Create your views here.
 load_dotenv()
 
@@ -218,7 +219,13 @@ def update_jammer(request):
         permission = Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
         if not permission:
             return Response({"You dont have permission to do that"},status=400)
-        response=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).update(status= not status)
+        jammer_status=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).first().status
+        resposne_mqtt=requests.get(url=os.getenv('URL_ESP')+"/set",params= 0 if jammer_status else 2,timeout=6 )
+        resposne_mqtt.raise_for_status()
+        response=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).update(status= not jammer_status)
         return Response({"Sala deleted with sucess!",response},status=200)    
     except Exception as e:
         return Response({"Error":str(e)},status=400)
+
+
+    
