@@ -210,6 +210,7 @@ def delete_jammer(request):
 @api_view(['UPDATE'])
 def update_jammer(request):
     try:
+        mode=request.data.get('mode')
         user=request.user_id
         estabelecimento=request.GET.get('id_estabelecimento')
         sala=request.GET.get('id_sala')
@@ -220,7 +221,7 @@ def update_jammer(request):
         if not permission:
             return Response({"You dont have permission to do that"},status=400)
         jammer_status=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).first().status
-        resposne_mqtt=requests.get(url=os.getenv('URL_ESP')+"/set",params= 0 if jammer_status else 2,timeout=6 )
+        resposne_mqtt=requests.get(url=os.getenv('URL_ESP')+"/set",params= 0 if jammer_status else mode,timeout=6 )
         resposne_mqtt.raise_for_status()
         response=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).update(status= not jammer_status)
         return Response({"Sala deleted with sucess!",response},status=200)    
