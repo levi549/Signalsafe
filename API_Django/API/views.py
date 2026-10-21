@@ -1,3 +1,5 @@
+# Problema: "render" e importado, mas nao e utilizado neste arquivo.
+# Resolucao: remova este import se a view nao for renderizar templates Django.
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -5,6 +7,8 @@ from supabase import create_client
 from dotenv import load_dotenv
 import os
 from .serializers import CadastroSerializer, LoginSerializer, EstabelecimentoSerializer, SalaSerializer, JammerSerializer
+# Problema: "User" e importado, mas nao e utilizado neste arquivo.
+# Resolucao: remova "User" deste import caso nao venha a utiliza-lo.
 from .models import Estabelecimento, Sala, Jammer,User
 import requests
 # Create your views here.
@@ -122,11 +126,11 @@ def create_sala(request):
         user=request.user_id
         estabelecimento=request.GET.get('id_estabelecimento')
         data=request.data
+        if not user or not data or not estabelecimento:
+            return Response({"Error":"something is missing"},status=400)
         permission=Estabelecimento.objects.filter(id=estabelecimento,id_user_id=user).exists()
         if not permission:
             return Response({"error":"You don't have permission to create a sala for this estabelecimento"},status=403)
-        if not user or not data or not estabelecimento:
-            return Response({"Error":"something is missing"},status=400)
         serializer=SalaSerializer(data=data)
         if not serializer.is_valid():
             return Response({"error":serializer.errors},status=400)
@@ -144,11 +148,11 @@ def create_jammer(request):
         estabelecimento=request.GET.get('id_estabelecimento')
         sala=request.GET.get('id_sala')
         data=request.data
-        permission=Sala.objects.filter(id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
-        if not permission:
-            return Response({"error":"credenciais invaidas"},status=400)
         if not user or not estabelecimento or not sala or not data:
             return Response({"error":"something is missing"},status=400)
+        permission=Sala.objects.filter(id=sala,id_estabe_id=estabelecimento,id_estabe__id_user_id=user).exists()
+        if not permission:
+            return Response({"error":"credenciais invaidas"},status=400)
         serializer=JammerSerializer(data=data)
         if not serializer.is_valid():
             return Response({"error":serializer.errors},status=400)
@@ -180,12 +184,12 @@ def delete_sala(request):
         estabelecimento=request.GET.get('id_estabelecimento')
         sala=request.GET.get('id_sala')
         if not user or not estabelecimento or not sala:
-            return Respose({"Somethng is missing"},status=400)
+            return Response({"error": "Something is missing"},status=400)
         permission=Sala.objects.filter(id=sala,id_estabe_id=estabelecimento,id_estabe__id_user_id=user).exists()
         if not permission:
             return Response({"You dont have permission to do that"},status=400)
         resposne=Sala.objects.filter(id=sala,id_estabe_id=estabelecimento,id_estabe__id_user_id=user).delete()
-        return Response({"Sala deleted with sucess!",resposne},status=200)    
+        return Response({"Sala deleted with sucess!":resposne},status=200)    
     except Exception as e:
         return Response({"Error":str(e)},status=400)
 
@@ -197,17 +201,18 @@ def delete_jammer(request):
         sala=request.GET.get('id_sala')
         jammer=request.GET.get('id_jammer')
         if not user or not estabelecimento or not sala or not jammer:
-            return Respose({"Somethng is missing"},status=400)
+            return Response({"error": "Something is missing"},status=400)
         permission = Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
         if not permission:
             return Response({"You dont have permission to do that"},status=400)
         response=Jammer.objects.filter(id=jammer,id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).delete()
-        return Response({"Sala deleted with sucess!",response},status=200)    
+       
+        return Response({"Sala deleted with sucess!":response},status=200)    
     except Exception as e:
         return Response({"Error":str(e)},status=400)
 
 
-@api_view(['UPDATE'])
+@api_view(['PUT'])
 def update_jammer(request):
     try:
         mode=request.data.get('mode')
@@ -216,15 +221,15 @@ def update_jammer(request):
         sala=request.GET.get('id_sala')
         jammer=request.GET.get('id_jammer')
         if not user or not estabelecimento or not sala or not jammer:
-            return Respose({"Somethng is missing"},status=400)
+            return Response({"error": "Something is missing"},status=400)
         permission = Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento,id_sala__id_estabe__id_user_id=user).exists()
         if not permission:
             return Response({"You dont have permission to do that"},status=400)
         jammer_status=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).first().status
-        resposne_mqtt=requests.get(url=os.getenv('URL_ESP')+"/set",params= 0 if jammer_status else mode,timeout=6 )
+        resposne_mqtt=requests.get(url=os.getenv('URL_ESP')+"/set",params={"mode": 0 if jammer_status else mode},timeout=6 )
         resposne_mqtt.raise_for_status()
         response=Jammer.objects.filter(id_sala_id=sala,id_sala__id_estabe_id=estabelecimento).update(status= not jammer_status)
-        return Response({"Sala deleted with sucess!",response},status=200)    
+        return Response({"jammer updated with sucess!":response},status=200)    
     except Exception as e:
         return Response({"Error":str(e)},status=400)
 
