@@ -38,7 +38,7 @@ def listar_estabelecimentos(entrada: ListarEstabelecimentosInput):
         respose.raise_for_status()
         return respose.json()
     except Exception as e:
-        return e.json()
+        return e
 
 
 
@@ -52,7 +52,7 @@ def listar_salas(entrada: ListarSalasInput):
         respose.raise_for_status()
         return respose.json()
     except Exception as e:
-        return e.json()
+        return e
 
 @mcp.tool()
 def listar_jammer(entrada: ListarJammerInput):
@@ -64,15 +64,14 @@ def listar_jammer(entrada: ListarJammerInput):
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        return e.json()
+        return e
 
 @mcp.tool()
-def desligar_jammer(entrada: DesligarJammerInput):
+def update_jammer(entrada: DesligarJammerInput):
     try:
         pass
     except Exception as e:
-        return e.json()
-
+        return e
 mcp.run(
         transport="streamable-http",
         host="0.0.0.0",

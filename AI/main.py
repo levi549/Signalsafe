@@ -1,5 +1,4 @@
 from langchain.agents import create_agent
-from langchain.tools import tools
 import os
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
@@ -98,11 +97,11 @@ Não afirme que um jammer foi ligado, desligado ou atualizado se a ferramenta n�
         self.memory=[]
 
 
-    async def Get_tools(): 
-        async with MCPAdapter("http://localhost:3000") as adapter:
+    async def Get_tools(self): 
+        async with MCPAdapter("http://localhost:3000/mcp") as adapter:
             self.tools=await adapter.list_tools()
 
 
-    def inferência():
+    def inferência(self):
         pass
 
